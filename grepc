@@ -1,0 +1,12 @@
+#!/bin/sh
+#grep some string in C/C++ source and header files
+
+pattern=$*
+
+grep --color -rnw \
+     --include=*.c \
+     --include=*.h \
+     --include=*.cpp \
+     --include=*.hh \
+     --include=*.cc \
+     . -e "$pattern"

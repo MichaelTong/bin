@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# User options
+EDITOR=code
+PDFREADER=wo
+FILEEXPLORER=wo
+REPORT_HOME=/home/michaelht/reports
+TEMPLATE=$REPORT_HOME/latex-sample
+CREATE_YEAR_UPPER=2025
+CREATE_YEAR_LOWER=2014
+
+#### Begin main script
+SUBDIR=mgreport.d
+
+export EDITOR
+export PDFREADER
+export FILEEXPLORER
+export REPORT_HOME
+export TEMPLATE
+export CREATE_YEAR_UPPER
+export CREATE_YEAR_LOWER
+export MGREPORT="MGREPORT"
+
+export USAGE=`cat ./$SUBDIR/USAGE`
+
+print_usage () {
+    echo "$USAGE"
+}
+export -f print_usage
+
+if [[ $# -lt 1 ]]; then
+    $SUBDIR/work_report
+    exit
+fi
+
+if [[ $# -gt 2 ]]; then
+    echo "Error: too many arguments"
+    print_usage
+    exit -1
+fi
+
+argc=$#
+opt=$1
+shift
+
+case $opt in
+    "-c")
+        $SUBDIR/create_report $*
+        ;;
+    "-l")
+        $SUBDIR/list_report $*
+        ;;
+    "-o")
+        $SUBDIR/open_report $*
+        ;;
+    "-w")
+        $SUBDIR/work_report $*
+        ;;
+    "-h")
+        print_usage
+        exit
+        ;;
+    *)
+        
+        if [[ $argc -gt 1 ]]; then
+            print_usage
+            exit -1
+        elif [[ $opt = "-"* ]]; then
+            echo "Unknown option for '$opt'"
+            print_usage
+            exit -1
+        else
+            $SUBDIR/work_report $opt
+        fi
+        ;;
+esac
+
+

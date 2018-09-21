@@ -1,0 +1,56 @@
+#!/bin/bash
+# Serve mgreport
+# Should not be called directly
+
+if [[ -z $MGREPORT ]]; then
+    echo "This script needs to call within \"mgreport\""
+    exit -2
+fi
+
+# script starts here
+if [[ $# -lt 1 ]]; then
+    print_usage
+    exit -1
+fi
+
+regrex='^([0-9]{4})\.([0-9]{2})_([0-9])'
+
+if [[ $1 =~ $regrex ]]; then
+    year=${BASH_REMATCH[1]}
+    month=${BASH_REMATCH[2]}
+    number=${BASH_REMATCH[3]}
+    if ! [[ ${year#0} -le ${CREATE_YEAR_UPPER#0} ]]; then
+        echo "Are you sure you are still writing reports in this way at year $year?"
+        echo "If so, please change the year limit in the script"
+        exit -1
+    fi
+    if ! [[ ${year#0} -ge ${CREATE_YEAR_LOWER#0} ]]; then
+        echo "If you want to write a report prior than $CREATE_YEAR_LOWER, please change the year lower limit in the script"
+        exit -1
+    fi
+    if ! [[ ${month#0} -le 12 && ${month#0} -ge 1 ]]; then
+        echo "Error: wrong month"
+        exit -1
+    fi
+else
+    echo "Error: wrong parameter for -c"
+    print_usage
+    exit -1
+fi
+       
+new_report_dir=${year}.${month}_${number}
+if [[ -e $REPORT_HOME/$new_report_dir ]]; then
+    echo "Report already exists at $REPORT_HOME/$new_report_dir, existing"
+    exit 2
+fi
+
+echo "Creating report templates for Year $year Month $month No. $number: $REPORT_HOME/$new_report_dir"
+
+cp -a $TEMPLATE $REPORT_HOME/$new_report_dir
+mv $REPORT_HOME/$new_report_dir/report.tex $REPORT_HOME/$new_report_dir/report-$new_report_dir.tex
+cd $REPORT_HOME/$new_report_dir
+if ! [[ -z $EDITOR ]]; then
+    $EDITOR .
+else
+    echo "\$EDITOR not defined, skipping open new report directory with editor"
+fi

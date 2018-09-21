@@ -1,0 +1,63 @@
+#!/bin/bash
+# Serve mgreport
+# Should not be called directly
+
+if [[ -z $MGREPORT ]]; then
+    echo "This script needs to call within \"mgreport\""
+    exit -2
+fi
+
+# script starts here
+regrex='^([0-9]{4})\.([0-9]{2})_([0-9])'
+
+report_to_open=""
+
+if [[ $# -lt 1 ]]; then
+    cd $REPORT_HOME
+    reports=($(ls -d *.*_*))
+    report_to_open=${reports[-1]}
+    echo "Opening most recent report: $report_to_open"
+else
+    if [[ $1 =~ $regrex ]]; then
+        year=${BASH_REMATCH[1]}
+        month=${BASH_REMATCH[2]}
+        number=${BASH_REMATCH[3]}
+        report_to_open=$year.${month}_$number
+    else
+        echo "Error: wrong report name format"
+        print_usage
+        exit -1
+    fi
+fi
+
+if ! [[ -e $REPORT_HOME/$report_to_open ]]; then
+    echo "Report '$report_to_open' doesn't exist"
+    exit -3
+fi
+
+pdf1=report.pdf
+pdf2=report-$report_to_open.pdf
+
+echo "Opening $report_to_open in file explorer"
+cd $REPORT_HOME/$report_to_open
+if ! [[ -z $FILEEXPLORER ]]; then
+    $FILEEXPLORER .
+else
+    echo "\$FILEEXPLORER not defined, skip opening directory in file explorer"
+fi
+
+if [[ -z $PDFREADER ]]; then
+    echo "Error: \$PDFREADER not defined, can't open pdf files"
+    exit -4
+fi
+
+
+echo "Opening report PDF"
+if [[ -e $pdf1 ]]; then
+    $PDFREADER $pdf1
+elif [[ -e $pdf2 ]]; then
+    $PDFREADER $pdf2
+elif ! [[ -z $EDITOR ]]; then
+    echo "PDF doesn't exist, open it in $EDITOR"
+    $EDITOR .
+fi

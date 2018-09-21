@@ -1,7 +1,5 @@
 #!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-echo $DIR
-exit
+
 # User options
 EDITOR=code
 PDFREADER=wo
@@ -13,7 +11,7 @@ CREATE_YEAR_LOWER=2014
 
 #### Begin main script
 SUBDIR=mgreport.d
-
+ROOTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 export EDITOR
 export PDFREADER
 export FILEEXPLORER
@@ -23,7 +21,7 @@ export CREATE_YEAR_UPPER
 export CREATE_YEAR_LOWER
 export MGREPORT="MGREPORT"
 
-export USAGE=`cat ./$SUBDIR/USAGE`
+export USAGE=`cat $ROOTDIR/$SUBDIR/USAGE`
 
 print_usage () {
     echo "$USAGE"
@@ -31,7 +29,7 @@ print_usage () {
 export -f print_usage
 
 if [[ $# -lt 1 ]]; then
-    $SUBDIR/work_report
+    $ROOTDIR/$SUBDIR/work_report
     exit
 fi
 
@@ -47,16 +45,16 @@ shift
 
 case $opt in
     "-c")
-        $SUBDIR/create_report $*
+        $ROOTDIR/$SUBDIR/create_report $*
         ;;
     "-l")
-        $SUBDIR/list_report $*
+        $ROOTDIR/$SUBDIR/list_report $*
         ;;
     "-o")
-        $SUBDIR/open_report $*
+        $ROOTDIR/$SUBDIR/open_report $*
         ;;
     "-w")
-        $SUBDIR/work_report $*
+        $ROOTDIR/$SUBDIR/work_report $*
         ;;
     "-h")
         print_usage
@@ -72,7 +70,7 @@ case $opt in
             print_usage
             exit -1
         else
-            $SUBDIR/work_report $opt
+            $ROOTDIR/$SUBDIR/work_report $opt
         fi
         ;;
 esac

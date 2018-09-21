@@ -2,7 +2,7 @@ Usage: mgreport [-c|-l|-o|-w|-h] ...
 Manage reports of year YEAR, month MO and No. n.
 
 [-w] [YEAR.MO_n]  Open the specified report pdf, if existing. Otherwise open the directory with editor
- -c  [YEAR.MO_n]  Create new report directory and open it in editor
+ -c   YEAR.MO_n   Create new report directory and open it in editor
  -l  [YEAR[.MO]]  List existing reports by year
  -o  [YEAR.MO_n]  Open latest report pdf, if existing. Otherwise open the directory with editor
  -h               Print this help information
